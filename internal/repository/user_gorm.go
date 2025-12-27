@@ -1,0 +1,27 @@
+package repository
+
+import (
+	"go-rest-api/internal/model"
+	"gorm.io/gorm"
+)
+
+type userGorm struct {
+    db *gorm.DB
+}
+
+func NewUserRepository(db *gorm.DB) UserRepository {
+    return &userGorm{db: db}
+}
+
+func (r *userGorm) FindByID(id uint) (*model.User, error) {
+    var user model.User
+    err := r.db.First(&user, id).Error
+    if err != nil {
+        return nil, err
+    }
+    return &user, nil
+}
+
+func (r *userGorm) Create(user *model.User) error {
+    return r.db.Create(user).Error
+}

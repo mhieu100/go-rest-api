@@ -1,0 +1,16 @@
+### Khai báo biến (Tùy chọn)
+@baseUrl = http://localhost:3000
+
+### Lấy danh sách sách (GET)
+GET {{baseUrl}}/api/users/1
+Accept: application/json
+
+###
+### Thêm một cuốn sách mới (POST)
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+    "email": "hieu@gmail.com",
+    "name": "Mhieu"
+}

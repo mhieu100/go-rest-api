@@ -1,48 +1,24 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
-	"log"
-	"net/http"
-	"os"
+	"go-rest-api/internal/config"
+	"go-rest-api/internal/database"
+	"go-rest-api/internal/handler"
+	"go-rest-api/internal/repository"
+	"go-rest-api/internal/router"
+	"go-rest-api/internal/service"
 )
-
-type Book struct {
-	ID     string `json:"id"`
-	Title  string `json:"title"`
-	Author string `json:"author"`
-}
-
-var books = []Book{
-	{ID: "1", Title: "Golang cơ bản", Author: "Gemini"},
-	{ID: "2", Title: "Học Microservices", Author: "Google"},
-}
 
 func main() {
 
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	cfg := config.Load()
 
-	port := os.Getenv("PORT")
+	db := database.InitDB(cfg.DBUrl)
 
-	router := gin.Default()
-	router.SetTrustedProxies([]string{"127.0.0.1"})
+	userRepo := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepo)
+	userHandler := handler.NewUserHandler(userService)
 
-	router.GET("/books", func(c *gin.Context) {
-		c.IndentedJSON(http.StatusOK, books)
-	})
-
-	router.POST("/books", func(c *gin.Context) {
-		var newBook Book
-		if err := c.BindJSON(&newBook); err != nil {
-			return
-		}
-		books = append(books, newBook)
-		c.IndentedJSON(http.StatusCreated, newBook)
-	})
-
-	router.Run("localhost:" + port)
+	r := router.New(userHandler)
+	r.Run("localhost:" + cfg.AppPort)
 }
