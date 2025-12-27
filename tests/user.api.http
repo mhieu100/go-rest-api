@@ -1,16 +1,59 @@
 ### Khai báo biến (Tùy chọn)
 @baseUrl = http://localhost:3000
 
-### Lấy danh sách sách (GET)
+### Lấy danh sách tất cả users (GET)
+GET {{baseUrl}}/api/users
+Accept: application/json
+
+###
+
+### Lấy user theo ID (GET)
 GET {{baseUrl}}/api/users/1
 Accept: application/json
 
 ###
-### Thêm một cuốn sách mới (POST)
+
+### Thêm một user mới (POST)
 POST {{baseUrl}}/api/users
 Content-Type: application/json
 
 {
-    "email": "hieu@gmail.com",
-    "name": "Mhieu"
+    "email": "trang@gmail.com",
+    "name": "Trang"
 }
+
+###
+
+### Cập nhật user (PUT)
+PUT {{baseUrl}}/api/users/1
+Content-Type: application/json
+
+{
+    "email": "updated@gmail.com",
+    "name": "Updated Name"
+}
+
+###
+
+### Xóa user (DELETE)
+DELETE {{baseUrl}}/api/users/1
+Accept: application/json
+
+###
+
+### Test lỗi: Tạo user với email trống (POST)
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+    "email": "",
+    "name": "Test User"
+}
+
+###
+
+### Test lỗi: Lấy user không tồn tại (GET)
+GET {{baseUrl}}/api/users/999
+Accept: application/json
+
+###

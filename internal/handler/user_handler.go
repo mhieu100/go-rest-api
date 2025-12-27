@@ -1,7 +1,10 @@
 package handler
 
 import (
+	"go-rest-api/internal/dto"
 	"go-rest-api/internal/service"
+	"go-rest-api/pkg/response"
+	pkgValidator "go-rest-api/pkg/validator"
 	"net/http"
 	"strconv"
 
@@ -9,39 +12,92 @@ import (
 )
 
 type UserHandler struct {
-    service service.UserService
+	service service.UserService
 }
 
 func NewUserHandler(s service.UserService) *UserHandler {
-    return &UserHandler{service: s}
+	return &UserHandler{service: s}
 }
 
 func (h *UserHandler) Get(c *gin.Context) {
-    id, _ := strconv.Atoi(c.Param("id"))
-    user, err := h.service.GetUser(uint(id))
-    if err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-        return
-    }
-    c.JSON(http.StatusOK, user)
+	id, _ := strconv.Atoi(c.Param("id"))
+	user, err := h.service.GetUser(uint(id))
+	if err != nil {
+		response.Error(c, http.StatusNotFound, err.Error())
+		return
+	}
+	response.Success(c, user)
+}
+
+func (h *UserHandler) GetAll(c *gin.Context) {
+	users, err := h.service.GetAllUsers()
+	if err != nil {
+		response.Error(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	response.Success(c, users)
 }
 
 func (h *UserHandler) Create(c *gin.Context) {
-    var req struct {
-        Email string `json:"email"`
-        Name  string `json:"name"`
-    }
+	var req dto.CreateUserRequest
 
-    if err := c.ShouldBindJSON(&req); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+	if err := c.ShouldBindJSON(&req); err != nil {
+		validationErrors := pkgValidator.FormatErrors(err)
+		if validationErrors != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code":    http.StatusBadRequest,
+				"message": "Validation failed",
+				"errors":  validationErrors,
+			})
+			return
+		}
+		response.Error(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
-    err := h.service.CreateUser(req.Email, req.Name)
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+	err := h.service.CreateUser(req.Email, req.Name)
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
-    c.Status(http.StatusCreated)
+	response.Created(c, nil)
+}
+
+func (h *UserHandler) Update(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var req dto.UpdateUserRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		validationErrors := pkgValidator.FormatErrors(err)
+		if validationErrors != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code":    http.StatusBadRequest,
+				"message": "Validation failed",
+				"errors":  validationErrors,
+			})
+			return
+		}
+		response.Error(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err := h.service.UpdateUser(uint(id), req.Email, req.Name)
+	if err != nil {
+		response.Error(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response.Success(c, nil)
+}
+
+func (h *UserHandler) Delete(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	err := h.service.DeleteUser(uint(id))
+	if err != nil {
+		response.Error(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response.Success(c, nil)
 }
