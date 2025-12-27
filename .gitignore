@@ -1,0 +1,37 @@
+# ===== Go build output =====
+/bin/
+/dist/
+/build/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# ===== Go test =====
+*.test
+*.out
+
+# ===== Go workspace =====
+go.work
+go.work.sum
+
+# ===== IDE / Editor =====
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Environment variables =====
+.env
+.env.*
+
+# ===== Logs =====
+*.log
+
+# ===== Coverage =====
+coverage.out
