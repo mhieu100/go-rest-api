@@ -30,12 +30,15 @@ func (h *UserHandler) Get(c *gin.Context) {
 }
 
 func (h *UserHandler) GetAll(c *gin.Context) {
-	users, err := h.service.GetAllUsers()
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+	users, total, err := h.service.GetAllUsers(page, limit)
 	if err != nil {
 		response.Error(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	response.Success(c, users)
+	response.SuccessWithPagination(c, users, total, page, limit)
 }
 
 func (h *UserHandler) Create(c *gin.Context) {
