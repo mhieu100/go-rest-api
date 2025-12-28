@@ -9,3 +9,11 @@ type UpdateUserRequest struct {
 	Email string `json:"email" binding:"omitempty,email"`
 	Name  string `json:"name" binding:"omitempty,min=3,max=100"`
 }
+
+type LoginRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+type LoginResponse struct {
+	Token string `json:"token"`
+}

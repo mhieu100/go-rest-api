@@ -6,10 +6,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterUserRoutes(r *gin.RouterGroup, h *handler.UserHandler) {
+func RegisterPublicUserRoutes(r *gin.RouterGroup, h *handler.UserHandler) {
 	users := r.Group("/users")
 	{
 		users.GET("", h.GetAll)
+	}
+}
+
+func RegisterProtectedUserRoutes(r *gin.RouterGroup, h *handler.UserHandler) {
+	users := r.Group("/users")
+	{
 		users.GET("/:id", h.Get)
 		users.POST("", h.Create)
 		users.PUT("/:id", h.Update)

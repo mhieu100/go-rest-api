@@ -1,31 +1,50 @@
-### Khai báo biến (Tùy chọn)
+### Khai báo biến
 @baseUrl = http://localhost:3000
 
-### Lấy danh sách tất cả users (GET)
-GET {{baseUrl}}/api/users?page=1&limit=2
-Accept: application/json
+# ==========================================
+# AUTHENTICATION
+# ==========================================
 
-###
-
-### Lấy user theo ID (GET)
-GET {{baseUrl}}/api/users/1
-Accept: application/json
-
-###
-
-### Thêm một user mới (POST)
-POST {{baseUrl}}/api/users
+### 1. Login để lấy Token
+# @name login
+POST {{baseUrl}}/api/login
 Content-Type: application/json
 
 {
-    "email": "trang@gmail.com",
-    "name": "Trang"
+    "email": "trang@gmail.com"
 }
 
-###
+### Lưu token vào biến
+@authToken = {{login.response.body.data.token}}
 
-### Cập nhật user (PUT)
+
+# ==========================================
+# USER OPERATIONS (Requires Token)
+# ==========================================
+
+### 2. Lấy danh sách users (có phân trang)
+GET {{baseUrl}}/api/users?page=1&limit=5
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+### 3. Thêm một user mới
+POST {{baseUrl}}/api/users
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "email": "newuser@gmail.com",
+    "name": "New User"
+}
+
+### 4. Lấy user theo ID
+GET {{baseUrl}}/api/users/2
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+### 5. Cập nhật user
 PUT {{baseUrl}}/api/users/1
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
@@ -33,27 +52,31 @@ Content-Type: application/json
     "name": "Updated Name"
 }
 
-###
-
-### Xóa user (DELETE)
-DELETE {{baseUrl}}/api/users/1
+### 6. Xóa user
+DELETE {{baseUrl}}/api/users/10
+Authorization: Bearer {{authToken}}
 Accept: application/json
 
-###
 
-### Test lỗi: Tạo user với email trống (POST)
+# ==========================================
+# VALIDATION & ERRORS
+# ==========================================
+
+### 7. Test lỗi: Validate sai format email và tên quá ngắn
 POST {{baseUrl}}/api/users
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
-    "email": "",
-    "name": "Test User"
+    "email": "invalid-email",
+    "name": "ab"
 }
 
-###
-
-### Test lỗi: Lấy user không tồn tại (GET)
-GET {{baseUrl}}/api/users/999
+### 8. Test lỗi: Không có token (Unauthorized)
+GET {{baseUrl}}/api/users
 Accept: application/json
 
-###
+### 9. Test lỗi: Token không hợp lệ
+GET {{baseUrl}}/api/users
+Authorization: Bearer invalid_token_string
+Accept: application/json

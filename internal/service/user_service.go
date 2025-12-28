@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go-rest-api/internal/model"
 	"go-rest-api/internal/repository"
+	"go-rest-api/pkg/token"
 )
 
 type UserService interface {
@@ -12,6 +13,7 @@ type UserService interface {
 	CreateUser(email, name string) error
 	UpdateUser(id uint, email, name string) error
 	DeleteUser(id uint) error
+	Login(email string) (string, error)
 }
 
 type userService struct {
@@ -60,4 +62,13 @@ func (s *userService) UpdateUser(id uint, email, name string) error {
 
 func (s *userService) DeleteUser(id uint) error {
 	return s.repo.Delete(id)
+}
+
+func (s *userService) Login(email string) (string, error) {
+	user, err := s.repo.FindByEmail(email)
+	if err != nil {
+		return "", errors.New("invalid credentials")
+	}
+
+	return token.GenerateToken(user.ID, user.Email)
 }

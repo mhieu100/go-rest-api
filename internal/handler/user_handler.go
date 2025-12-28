@@ -104,3 +104,28 @@ func (h *UserHandler) Delete(c *gin.Context) {
 
 	response.Success(c, nil)
 }
+
+func (h *UserHandler) Login(c *gin.Context) {
+	var req dto.LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		validationErrors := pkgValidator.FormatErrors(err)
+		if validationErrors != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code":    http.StatusBadRequest,
+				"message": "Validation failed",
+				"errors":  validationErrors,
+			})
+			return
+		}
+		response.Error(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	token, err := h.service.Login(req.Email)
+	if err != nil {
+		response.Error(c, http.StatusUnauthorized, "Invalid credentials")
+		return
+	}
+
+	response.Success(c, dto.LoginResponse{Token: token})
+}

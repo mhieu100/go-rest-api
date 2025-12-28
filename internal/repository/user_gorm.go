@@ -23,6 +23,15 @@ func (r *userGorm) FindByID(id uint) (*model.User, error) {
 	return &user, nil
 }
 
+func (r *userGorm) FindByEmail(email string) (*model.User, error) {
+	var user model.User
+	err := r.db.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 func (r *userGorm) FindAll(page, limit int) ([]*model.User, int64, error) {
 	var users []*model.User
 	var total int64
