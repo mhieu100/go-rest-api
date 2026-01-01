@@ -6,6 +6,7 @@ type User struct {
     ID        uint      `gorm:"column:id;primaryKey"`
     Email     string    `gorm:"column:email"`
     Name      string    `gorm:"column:name"`
+    Password  string    `gorm:"column:password"`    
     CreatedAt time.Time `gorm:"column:created_at"`
     UpdatedAt time.Time `gorm:"column:updated_at"`
 }

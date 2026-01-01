@@ -129,3 +129,34 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 	response.Success(c, dto.LoginResponse{Token: token})
 }
+
+func (h *UserHandler) Register(c *gin.Context) {
+	var req dto.RegisterRequest
+	if err := c.ShouldBind(&req); err != nil {
+		validationErrors := pkgValidator.FormatErrors(err)
+		if validationErrors != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code":    http.StatusBadRequest,
+				"message": "Validation failed",
+				"errors":  validationErrors,
+			})
+			return
+		}
+		response.Error(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	user, err := h.service.Register(req.Email, req.Name, req.Password)
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	res := dto.RegisterResponse{
+		ID:    user.ID,
+		Email: user.Email,
+		Name:  user.Name,
+	}
+
+	response.Success(c, res)
+}

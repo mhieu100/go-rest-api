@@ -1,0 +1,5 @@
+h1:2I+VJcWpPs/HLMuE2VKIiteyS47yKm4xUmFMmfqxMCA=
+20251227120837_create_users_table.down.sql h1:2fjJZfMVkKlHBoGizw8c6sziggcn9cACsrh6a2+07L0=
+20251227120837_create_users_table.up.sql h1:kI8TPdk53KTG3RoCIvVwibiQt12ZS9u8iIiudsFszUE=
+20260101214340_add_password_to_users.down.sql h1:yK6ULnP7KoFwNK+9WVeUwxoMQukk92oycySzRAxfQD4=
+20260101214340_add_password_to_users.up.sql h1:5aHsZBJBBfMGoAe2CbF5Os4f5nxCUNaHq+mIqLRYXdk=

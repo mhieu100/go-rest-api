@@ -53,7 +53,7 @@ Content-Type: application/json
 }
 
 ### 6. Xóa user
-DELETE {{baseUrl}}/api/users/10
+DELETE {{baseUrl}}/api/users/2
 Authorization: Bearer {{authToken}}
 Accept: application/json
 

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go-rest-api/internal/model"
 	"go-rest-api/internal/repository"
+	"go-rest-api/pkg/hash"
 	"go-rest-api/pkg/token"
 )
 
@@ -14,6 +15,7 @@ type UserService interface {
 	UpdateUser(id uint, email, name string) error
 	DeleteUser(id uint) error
 	Login(email string) (string, error)
+	Register(email, name, password string) (*model.User, error)
 }
 
 type userService struct {
@@ -71,4 +73,27 @@ func (s *userService) Login(email string) (string, error) {
 	}
 
 	return token.GenerateToken(user.ID, user.Email)
+}
+
+func (s *userService) Register(email, name, password string) (*model.User, error) {
+	_, err := s.repo.FindByEmail(email)
+	if err == nil {
+		return nil, errors.New("user already exists")
+	}
+	hash, err := hash.HashPassword(password)
+	if err != nil {
+		return nil, err
+	}
+
+	user := &model.User{
+		Email:    email,
+		Name:     name,
+		Password: hash,
+	}
+
+	if err := s.repo.Create(user); err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
